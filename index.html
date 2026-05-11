@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pet Gallery</title>
+    <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="top-form">
+    <form id="add-form">
+      <input type="text" id="name-input" placeholder="Name" required />
+      <input type="file" id="image-input" accept="image/*" required />
+      <button type="submit">Add to Gallery</button>
+    </form>
+  </header>
+
+  <main class="main-layout">
+    <section class="gallery-list" id="gallery-list"></section>
+    <div class="divider" id="divider"></div>
+
+    <section class="preview" id="preview">
+      <div class="preview-inner" id="preview-inner">
+        <button class="preview-close" id="preview-close">
+          <img src="./assets/icons/close.svg" alt="close">
+        </button>
+
+        <div class="preview-image-wrapper">
+          <img id="preview-image" alt="" />
+        </div>
+
+        <div class="preview-controls">
+          <button id="prev-btn">
+            <img src="./assets/icons/arrow-left.svg" alt="prev">
+          </button>
+          <button id="next-btn">
+            <img src="./assets/icons/arrow-right.svg" alt="next">
+          </button>
+        </div>
+      </div>
+
+      <p class="preview-placeholder" id="preview-placeholder">
+        Select a pet to preview
+      </p>
+    </section>
+  </main>
+
+  <button class="scroll-top" id="scroll-top">
+    <img src="./assets/icons/arrow-up.svg" alt="up">
+  </button>
+
+  <div class="drag-coords" id="drag-coords"></div>
+  <script type="module" src="./src/script.js"></script>
+</body>
+</html>
