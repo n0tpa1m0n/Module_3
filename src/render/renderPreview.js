@@ -1,27 +1,17 @@
 import { state } from "../state.js";
+import { getRenderedCards, getActiveIndex } from "../util/galleryUtil.js";
+
 const previewInnerEl = document.getElementById("preview-inner");
 const previewImageEl = document.getElementById("preview-image");
 const previewPlaceholderEl = document.getElementById("preview-placeholder");
 const prevBtn = document.getElementById("prev-btn");
 const nextBtn = document.getElementById("next-btn");
-const galleryListEl = document.getElementById("gallery-list");
-
-function getRenderedCards() {
-  return Array.from(galleryListEl.querySelectorAll(".card"));
-}
-
-function getActiveIndex() {
-  const cards = getRenderedCards();
-  return cards.findIndex((card) => Number(card.dataset.id) === state.activeId);
-}
 
 export function updatePreview() {
   const cards = getRenderedCards();
+
   cards.forEach((card) => {
-    card.classList.toggle(
-      "active",
-      Number(card.dataset.id) === state.activeId
-    );
+    card.classList.toggle("active", card.dataset.id == state.activeId);
   });
 
   if (state.activeId == null) {
@@ -31,19 +21,23 @@ export function updatePreview() {
   }
 
   const activeCard = cards.find(
-    (card) => Number(card.dataset.id) === state.activeId
+    (card) => card.dataset.id == state.activeId
   );
 
   if (!activeCard) return;
 
   const img = activeCard.querySelector("img");
+  if (!img) return;
+
   previewImageEl.src = img.src;
   previewImageEl.alt = img.alt;
 
   previewInnerEl.style.display = "block";
   previewPlaceholderEl.style.display = "none";
 
-  const idx = getActiveIndex();
+  const idx = getActiveIndex(state);
+  const total = cards.length;
+
   prevBtn.disabled = idx <= 0;
-  nextBtn.disabled = idx >= cards.length - 1;
+  nextBtn.disabled = idx === -1 || idx >= total - 1;
 }

@@ -1,34 +1,43 @@
 import { state } from "../state.js";
 import { renderCard } from "./renderCard.js";
-import { createScrollTrigger } from "../logic/infiniteScroll.js";
-
-const galleryListEl = document.getElementById("gallery-list");
+import { addTrigger } from "../logic/infiniteScroll.js";
 
 export function resetList() {
-  galleryListEl.innerHTML = "";
+  const list = document.getElementById("gallery-list");
+  if (!list) return;
+
+  list.innerHTML = "";
   state.page = 0;
   state.isAllLoaded = false;
+
+  const old = document.getElementById("scrollTrigger");
+  if (old) old.remove();
+
   renderList();
 }
 
 export function renderList() {
   if (state.isAllLoaded) return;
 
-  const start = state.page * state.pageSize;
-  const end = start + state.pageSize;
-  const slice = state.images.slice(start, end);
+  const list = document.getElementById("gallery-list");
+  if (!list) return;
 
-  slice.forEach((item) => {
-    const card = renderCard(item);
-    galleryListEl.appendChild(card);
+  const from = state.page * state.pageSize;
+  const to = from + state.pageSize;
+  const batch = state.images.slice(from, to);
+
+  batch.forEach((item) => {
+    list.appendChild(renderCard(item));
   });
 
   state.page++;
 
-  if (end >= state.images.length) {
+  if (to >= state.images.length) {
     state.isAllLoaded = true;
+    const trigger = document.getElementById("scrollTrigger");
+    if (trigger) trigger.remove();
     return;
   }
 
-  createScrollTrigger(galleryListEl);
-}
+  addTrigger(list);
+}     

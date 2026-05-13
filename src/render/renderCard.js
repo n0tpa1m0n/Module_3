@@ -1,11 +1,17 @@
 export function renderCard(item) {
   const card = document.createElement("article");
   card.className = "card";
-  card.dataset.id = String(item.id);
+  card.dataset.id = item.id;
   card.draggable = true;
 
-  card.innerHTML = `
-    <img src="${item.src}" alt="${item.name}">
-    <div class="card-title">${item.name}</div>`;
-   return card;
+  const img = document.createElement("img");
+  img.src = item.src;
+  img.alt = item.name;
+
+  const title = document.createElement("div");
+  title.className = "card-title";
+  title.textContent = item.name;
+
+  card.append(img, title);
+  return card;
 }

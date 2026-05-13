@@ -1,53 +1,43 @@
 import { state } from "../state.js";
 import { renderList } from "../render/renderList.js";
 
-let observer = null;
+let observer;
 
-function ensureObserver(rootEl) {
+function setupObserver(root) {
   if (observer) return observer;
 
   observer = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting && !state.isAllLoaded) {
-      console.log("observer: trigger intersecting, calling renderList");
       renderList();
     }
-  }, { root: rootEl, threshold: 0.1 });
-
+  }, {
+    root,
+    threshold: 0.1
+  });
   return observer;
 }
 
 export function initInfiniteScroll() {
-  const galleryListEl = document.getElementById("gallery-list");
-  if (!galleryListEl) {
-    console.warn("initInfiniteScroll: gallery-list not found");
-    return;
-  }
-  ensureObserver(galleryListEl);
-  createScrollTrigger(galleryListEl);
+  const list = document.getElementById("gallery-list");
+  if (!list) return;
+
+  setupObserver(list);
+  addTrigger(list);
 }
 
-export function createScrollTrigger(parent) {
-  if (!parent) {
-    console.warn("createScrollTrigger: parent is falsy");
-    return;
-  }
-
-  const obs = ensureObserver(parent);
+export function addTrigger(list) {
+  const obs = setupObserver(list);
 
   const old = document.getElementById("scrollTrigger");
   if (old) {
-    try {
-      obs.unobserve(old);
-    } catch (e) {
-      console.warn("unobserve failed", e);
-    }
+    obs.unobserve(old);
     old.remove();
   }
 
   const trigger = document.createElement("div");
   trigger.id = "scrollTrigger";
   trigger.style.height = "1px";
-  parent.appendChild(trigger);
 
+  list.appendChild(trigger);
   obs.observe(trigger);
 }

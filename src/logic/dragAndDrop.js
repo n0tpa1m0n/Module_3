@@ -4,34 +4,35 @@ import { updatePreview } from "../render/renderPreview.js";
 export function initDragAndDrop() {
   const galleryListEl = document.getElementById("gallery-list");
   const previewEl = document.getElementById("preview");
-  const dragCoordsEl = document.getElementById("drag-coords");
+  const coords = document.getElementById("drag-coords");
+
+  if (!galleryListEl || !previewEl || !coords) return;
 
   galleryListEl.addEventListener("dragstart", (e) => {
     const card = e.target.closest(".card");
     if (!card) return;
     state.isDragging = true;
     e.dataTransfer.setData("text/plain", card.dataset.id);
-    dragCoordsEl.style.display = "block";
+    coords.style.display = "block";
   });
 
   galleryListEl.addEventListener("dragend", () => {
     state.isDragging = false;
-    dragCoordsEl.style.display = "none";
-  });
-
-  document.addEventListener("dragover", (e) => {
-    if (!state.isDragging) return;
-    dragCoordsEl.textContent = `x: ${e.clientX}, y: ${e.clientY}`;
+    coords.style.display = "none";
   });
 
   previewEl.addEventListener("dragover", (e) => {
+    if (!state.isDragging) return;
+    coords.textContent = `x: ${e.clientX}, y: ${e.clientY}`;
     e.preventDefault();
   });
 
-  previewEl.addEventListener("drop", (e) => {
-    e.preventDefault();
-    const id = Number(e.dataTransfer.getData("text/plain"));
-    state.activeId = id;
-    updatePreview();
-  });
+previewEl.addEventListener("drop", (e) => {
+  e.preventDefault();
+  const id = e.dataTransfer.getData("text/plain");
+  if (!id) return;
+
+  state.activeId = id;
+  updatePreview();
+});
 }

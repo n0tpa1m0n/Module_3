@@ -1,50 +1,49 @@
 import { state } from "../state.js";
 import { updatePreview } from "../render/renderPreview.js";
+import { getActiveIndex, getRenderedCards } from "../util/galleryUtil.js";
 
-const galleryListEl = document.getElementById("gallery-list");
 const prevBtn = document.getElementById("prev-btn");
 const nextBtn = document.getElementById("next-btn");
 
-function getRenderedCards() {
-  return Array.from(galleryListEl.querySelectorAll(".card"));
-}
-
-function getActiveIndex() {
+function activateCard(index) {
   const cards = getRenderedCards();
-  return cards.findIndex((card) => Number(card.dataset.id) === state.activeId);
-}
-
-function setActiveByIndex(index) {
-  const cards = getRenderedCards();
+  if (!cards.length) return;
   if (index < 0 || index >= cards.length) return;
-  state.activeId = Number(cards[index].dataset.id);
+
+  const card = cards[index];
+  state.activeId = Number(card.dataset.id);
   updatePreview();
 }
 
 export function initNavigation() {
+  if (!prevBtn || !nextBtn) return;
+
   prevBtn.addEventListener("click", () => {
-    const idx = getActiveIndex();
-    if (idx > 0) setActiveByIndex(idx - 1);
+    const idx = getActiveIndex(state);
+    if (idx === -1) return;
+    if (idx > 0) activateCard(idx - 1);
   });
 
   nextBtn.addEventListener("click", () => {
-    const idx = getActiveIndex();
-    if (idx < getRenderedCards().length - 1) {
-      setActiveByIndex(idx + 1);
-    }
+    const idx = getActiveIndex(state);
+    if (idx === -1) return;
+    const cards = getRenderedCards();
+    if (idx < cards.length - 1) activateCard(idx + 1);
   });
 
   document.addEventListener("keydown", (e) => {
     if (state.activeId == null) return;
 
-    if (e.key === "ArrowLeft") {
-      const idx = getActiveIndex();
-      if (idx > 0) setActiveByIndex(idx - 1);
+    const idx = getActiveIndex(state);
+    if (idx === -1) return;
+
+    if (e.key === "ArrowLeft" && idx > 0) {
+      setActiveByIndex(idx - 1);
     }
 
     if (e.key === "ArrowRight") {
-      const idx = getActiveIndex();
-      if (idx < getRenderedCards().length - 1) {
+      const cards = getRenderedCards();
+      if (idx < cards.length - 1) {
         setActiveByIndex(idx + 1);
       }
     }

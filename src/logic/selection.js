@@ -8,7 +8,7 @@ export function initSelection() {
   galleryListEl.addEventListener("click", (e) => {
     const card = e.target.closest(".card");
     if (!card) return;
-    state.activeId = Number(card.dataset.id);
+    state.activeId = card.dataset.id;
     updatePreview();
   });
 
