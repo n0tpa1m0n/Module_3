@@ -1,7 +1,8 @@
 const ProductsDiscount = new WeakMap();
 
 class Product {
-  constructor(name, price) {
+  constructor(id, name, price) {
+    this.id = id;
     this.name = name;
     this.price = price;
   }
@@ -15,18 +16,24 @@ class Product {
   }
 }
 
-let p1 = new Product("Laptop", 2000);
-let p2 = new Product("Phone", 1000);
-let p3 = new Product("Tablet", 1500);
+let products = [
+  new Product(1, "Laptop", 2000),
+  new Product(2, "Phone", 1000),
+  new Product(3, "Tablet", 1500)
+];
 
-p1.setDiscount(10);
-p2.setDiscount(20);
-p3.setDiscount(15);
+products[0].setDiscount(10);
+products[1].setDiscount(20);
+products[2].setDiscount(15);
 
-console.log("Before delete:", ProductsDiscount);
+console.log("Before removal:", ProductsDiscount);
 
-p2 = null;
+function removeProductById(id) {
+  products = products.filter(p => p.id !== id);
+}
+
+removeProductById(2);
 
 setTimeout(() => {
-  console.log("After delete:", ProductsDiscount);
-}, 1000);
+  console.log("After removal:", ProductsDiscount);
+}, 500);
