@@ -1,0 +1,1 @@
+findSimilarity=(str,w)=>str.split(' ').filter(a=>a.length==w.length&&a[0]==w[0]&&a.slice(-1)==w.slice(-1)).join(' ')
