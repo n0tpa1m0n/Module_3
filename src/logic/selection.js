@@ -1,19 +1,13 @@
-import { state } from "../state.js";
-import { updatePreview } from "../render/renderPreview.js";
+import { state } from '../state.js';
+import { galleryList } from '../dom.js';
+import { renderPreview } from '../render/renderPreview.js';
 
 export function initSelection() {
-  const galleryListEl = document.getElementById("gallery-list");
-  const previewCloseBtn = document.getElementById("preview-close");
-
-  galleryListEl.addEventListener("click", (e) => {
-    const card = e.target.closest(".card");
+  galleryList.addEventListener('click', (e) => {
+    const card = e.target.closest('[data-id]');
     if (!card) return;
-    state.activeId = card.dataset.id;
-    updatePreview();
-  });
 
-  previewCloseBtn.addEventListener("click", () => {
-    state.activeId = null;
-    updatePreview();
+    state.activeId = card.dataset.id;
+    renderPreview();
   });
 }

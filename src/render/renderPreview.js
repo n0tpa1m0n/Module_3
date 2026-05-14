@@ -1,43 +1,26 @@
-import { state } from "../state.js";
-import { getRenderedCards, getActiveIndex } from "../util/galleryUtil.js";
+import { state } from '../state.js';
+import { previewImage, previewName, galleryList } from '../dom.js';
+import { openPreview, updateNavButtons } from '../logic/preview.js';
 
-const previewInnerEl = document.getElementById("preview-inner");
-const previewImageEl = document.getElementById("preview-image");
-const previewPlaceholderEl = document.getElementById("preview-placeholder");
-const prevBtn = document.getElementById("prev-btn");
-const nextBtn = document.getElementById("next-btn");
-
-export function updatePreview() {
-  const cards = getRenderedCards();
-
+export function highlightActiveCard() {
+  const cards = galleryList.querySelectorAll('.card');
   cards.forEach((card) => {
-    card.classList.toggle("active", card.dataset.id == state.activeId);
+    card.classList.toggle('active', card.dataset.id === state.activeId);
   });
+}
 
-  if (state.activeId == null) {
-    previewInnerEl.style.display = "none";
-    previewPlaceholderEl.style.display = "block";
+export function renderPreview() {
+  highlightActiveCard();
+
+  const active = state.images.find((img) => img.id === state.activeId);
+  if (!active) {
+    previewImage.src = '';
+    previewName.textContent = '';
     return;
   }
 
-  const activeCard = cards.find(
-    (card) => card.dataset.id == state.activeId
-  );
-
-  if (!activeCard) return;
-
-  const img = activeCard.querySelector("img");
-  if (!img) return;
-
-  previewImageEl.src = img.src;
-  previewImageEl.alt = img.alt;
-
-  previewInnerEl.style.display = "block";
-  previewPlaceholderEl.style.display = "none";
-
-  const idx = getActiveIndex(state);
-  const total = cards.length;
-
-  prevBtn.disabled = idx <= 0;
-  nextBtn.disabled = idx === -1 || idx >= total - 1;
+  previewImage.src = active.src;
+  previewName.textContent = active.name;
+  openPreview();
+  updateNavButtons();
 }

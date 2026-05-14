@@ -1,39 +1,56 @@
-import { state } from "../state.js";
-import { resetList } from "../render/renderList.js";
-import { updatePreview } from "../render/renderPreview.js";
+import { state } from '../state.js';
+import { form, fileInput, titleInput, galleryList } from '../dom.js';
+import { PAGE_SIZE } from '../consts.js';
+import { renderCard } from '../render/renderCard.js';
+import { renderPreview } from '../render/renderPreview.js';
+
+const MAX_FILE_SIZE_MB = 5;
+
+function validateFile(file) {
+  if (!file) return 'Файл не выбран';
+  if (!file.type.startsWith('image/')) return 'Загружать только изображения';
+  if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+    return `Размер файла не должен превышать ${MAX_FILE_SIZE_MB} мб`;
+  }
+  return null;
+}
 
 export function initForm() {
-  const formEl = document.getElementById("add-form");
-  const nameInput = document.getElementById("name-input");
-  const imageInput = document.getElementById("image-input");
-
-  if (!formEl || !nameInput || !imageInput) return;
-
-  formEl.addEventListener("submit", (e) => {
+  form.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    try {
-      const name = nameInput.value.trim();
-      const file = imageInput.files && imageInput.files[0];
-      if (!name || !file) return;
-
-      const src = URL.createObjectURL(file);
-      const newId =
-        typeof crypto !== "undefined" && crypto.randomUUID
-          ? crypto.randomUUID()
-          : Date.now();
-
-      const newImage = { id: newId, name, src };
-
-      state.images.unshift(newImage);
-      state.activeId = newImage.id;
-
-      resetList();
-      updatePreview();
-
-      formEl.reset();
-    } catch (err) {
-      console.error("form submit error", err);
+    const file = fileInput.files[0];
+    const error = validateFile(file);
+    if (error) {
+      alert(error);
+      return;
     }
+
+    const title = titleInput.value.trim() || 'Без названия';
+    const url = URL.createObjectURL(file);
+
+    const newImage = {
+      id: crypto.randomUUID(),
+      src: url,
+      name: title,
+      isBlob: true,
+    };
+
+    state.images.unshift(newImage);
+    state.activeId = newImage.id;
+
+    const cardEl = renderCard(newImage);
+    galleryList.prepend(cardEl);
+    renderPreview();
+
+    form.reset();
+  });
+
+  window.addEventListener('beforeunload', () => {
+    state.images.forEach((img) => {
+      if (img.isBlob && img.src.startsWith('blob:')) {
+        URL.revokeObjectURL(img.src);
+      }
+    });
   });
 }

@@ -1,38 +1,41 @@
-import { state } from "../state.js";
-import { updatePreview } from "../render/renderPreview.js";
+import { state } from '../state.js';
+import { galleryList, coordsBox, preview } from '../dom.js';
+import { renderPreview } from '../render/renderPreview.js';
+
+let currentDraggedId = null;
+
+function updateCoords(event) {
+  coordsBox.textContent = `x: ${event.clientX}, y: ${event.clientY}`;
+}
+
+function endDrag() {
+  currentDraggedId = null;
+  coordsBox.textContent = '';
+}
 
 export function initDragAndDrop() {
-  const galleryListEl = document.getElementById("gallery-list");
-  const previewEl = document.getElementById("preview");
-  const coords = document.getElementById("drag-coords");
-
-  if (!galleryListEl || !previewEl || !coords) return;
-
-  galleryListEl.addEventListener("dragstart", (e) => {
-    const card = e.target.closest(".card");
+  galleryList.addEventListener('dragstart', (e) => {
+    const card = e.target.closest('[data-id]');
     if (!card) return;
-    state.isDragging = true;
-    e.dataTransfer.setData("text/plain", card.dataset.id);
-    coords.style.display = "block";
+    currentDraggedId = card.dataset.id;
   });
 
-  galleryListEl.addEventListener("dragend", () => {
-    state.isDragging = false;
-    coords.style.display = "none";
+  document.addEventListener('dragover', (e) => {
+    if (currentDraggedId) updateCoords(e);
   });
 
-  previewEl.addEventListener("dragover", (e) => {
-    if (!state.isDragging) return;
-    coords.textContent = `x: ${e.clientX}, y: ${e.clientY}`;
+  preview.addEventListener('dragover', (e) => {
+    if (currentDraggedId) e.preventDefault();
+  });
+
+  preview.addEventListener('drop', (e) => {
     e.preventDefault();
+    if (!currentDraggedId) return;
+
+    state.activeId = currentDraggedId;
+    renderPreview();
+    endDrag();
   });
 
-previewEl.addEventListener("drop", (e) => {
-  e.preventDefault();
-  const id = e.dataTransfer.getData("text/plain");
-  if (!id) return;
-
-  state.activeId = id;
-  updatePreview();
-});
+  document.addEventListener('dragend', endDrag);
 }

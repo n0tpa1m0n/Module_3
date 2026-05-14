@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pet Gallery</title>
     <link rel="stylesheet" href="./styles.css" />
+    <link rel="icon" href="./assets/icons/paw.svg" />
+
 </head>
 <body>
   <header class="top-form">
@@ -26,14 +28,15 @@
         </button>
 
         <div class="preview-image-wrapper">
-          <img id="preview-image" alt="" />
+          <img id="preview-image" alt="preview" />
         </div>
 
+        <div class="preview-name" id="preview-name"></div>
         <div class="preview-controls">
-          <button id="prev-btn">
+          <button id="prev-btn" disabled>
             <img src="./assets/icons/arrow-left.svg" alt="prev">
           </button>
-          <button id="next-btn">
+          <button id="next-btn" disabled>
             <img src="./assets/icons/arrow-right.svg" alt="next">
           </button>
         </div>

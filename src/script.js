@@ -9,6 +9,8 @@ import { initDragAndDrop } from "./logic/dragAndDrop.js";
 import { initResizer } from "./logic/resizer.js";
 import { initScrollTop } from "./logic/scrollTop.js";
 import { initForm } from "./logic/form.js";
+import { initPreview } from "./logic/preview.js";
+import { divider, galleryList } from "./dom.js";
 
 state.images = IMAGES.slice();
 
@@ -17,6 +19,7 @@ renderList();
 initSelection();
 initNavigation();
 initDragAndDrop();
-initResizer();
+initResizer(divider, galleryList);
 initScrollTop();
 initForm();
+initPreview();

@@ -1,37 +1,40 @@
-export function initResizer() {
-  const galleryListEl = document.getElementById("gallery-list");
-  const dividerEl = document.getElementById("divider");
-  const mainLayout = document.querySelector(".main-layout");
+import { RESIZER_MIN_WIDTH, RESIZER_MAX_WIDTH } from '../consts.js';
 
-  let isResizing = false;
-  let startX = 0;
-  let startLeftWidth = 0;
+let isResizing = false;
+let startX = 0;
+let startLeftWidth = 0;
+let targetElement = null;
 
-  dividerEl.addEventListener("mousedown", (e) => {
+function onMouseMove(e) {
+  if (!isResizing || !targetElement) return;
+  const parent = targetElement.parentElement;
+  const parentWidth = parent.getBoundingClientRect().width;
+  const deltaPercent = ((e.clientX - startX) / parentWidth) * 100;
+  let newWidth = startLeftWidth + deltaPercent;
+  newWidth = Math.max(RESIZER_MIN_WIDTH, Math.min(RESIZER_MAX_WIDTH, newWidth));
+  targetElement.style.flexBasis = `${newWidth}%`;
+}
+
+function onMouseUp() {
+  if (!isResizing) return;
+  isResizing = false;
+  targetElement = null;
+  document.body.style.userSelect = '';
+  document.removeEventListener('mousemove', onMouseMove);
+  document.removeEventListener('mouseup', onMouseUp);
+}
+
+export function initResizer(resizerHandle, resizableElement) {
+  resizerHandle.addEventListener('mousedown', (e) => {
     isResizing = true;
+    targetElement = resizableElement;
     startX = e.clientX;
-    const leftRect = galleryListEl.getBoundingClientRect();
-    const containerRect = mainLayout.getBoundingClientRect();
-    startLeftWidth = (leftRect.width / containerRect.width) * 100;
-    document.body.style.userSelect = "none";
-  });
+    const parent = resizableElement.parentElement;
+    const parentWidth = parent.getBoundingClientRect().width;
+    startLeftWidth = (resizableElement.getBoundingClientRect().width / parentWidth) * 100;
+    document.body.style.userSelect = 'none';
 
-  document.addEventListener("mousemove", (e) => {
-    if (!isResizing) return;
-
-    const containerRect = mainLayout.getBoundingClientRect();
-    const dx = e.clientX - startX;
-    const deltaPercent = (dx / containerRect.width) * 100;
-    let newLeftPercent = startLeftWidth + deltaPercent;
-
-    if (newLeftPercent < 30) newLeftPercent = 30;
-    if (newLeftPercent > 80) newLeftPercent = 80;
-
-    galleryListEl.style.flexBasis = `${newLeftPercent}%`;
-  });
-
-  document.addEventListener("mouseup", () => {
-    isResizing = false;
-    document.body.style.userSelect = "";
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
   });
 }

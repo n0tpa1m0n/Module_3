@@ -1,6 +1,7 @@
 import { state } from "../state.js";
 import { renderCard } from "./renderCard.js";
 import { addTrigger } from "../logic/infiniteScroll.js";
+import { highlightActiveCard } from "./renderPreview.js";
 
 export function resetList() {
   const list = document.getElementById("gallery-list");
@@ -40,4 +41,5 @@ export function renderList() {
   }
 
   addTrigger(list);
-}     
+  highlightActiveCard();
+}

@@ -1,22 +1,16 @@
-import { state } from "../state.js";
+import { state } from '../state.js';
+import { scrollTopBtn, galleryList } from '../dom.js';
+import { SCROLL_BOTTOM_OFFSET } from '../consts.js';
+
+function onScroll() {
+  const atBottom = galleryList.scrollHeight - galleryList.scrollTop - galleryList.clientHeight < SCROLL_BOTTOM_OFFSET;
+  scrollTopBtn.classList.toggle('scroll-top--visible', atBottom && state.isAllLoaded);
+}
 
 export function initScrollTop() {
-  const galleryListEl = document.getElementById("gallery-list");
-  const scrollTopBtn = document.getElementById("scroll-top");
+  galleryList.addEventListener('scroll', onScroll);
 
-  if (!galleryListEl || !scrollTopBtn) return;
-
-  galleryListEl.addEventListener("scroll", () => {
-    const { scrollTop, scrollHeight, clientHeight } = galleryListEl;
-
-    if (scrollTop + clientHeight >= scrollHeight - 10) {
-      scrollTopBtn.style.display = "block";
-    } else if (scrollTop < 50) {
-      scrollTopBtn.style.display = "none";
-    }
-  });
-
-  scrollTopBtn.addEventListener("click", () => {
-    galleryListEl.scrollTo({ top: 0, behavior: "smooth" });
+  scrollTopBtn.addEventListener('click', () => {
+    galleryList.scrollTo({ top: 0, behavior: 'smooth' });
   });
 }

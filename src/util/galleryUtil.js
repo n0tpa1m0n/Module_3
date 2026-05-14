@@ -1,10 +1,11 @@
-export function getRenderedCards() {
-  const galleryListEl = document.getElementById("gallery-list");
-  if (!galleryListEl) return [];
-  return Array.from(galleryListEl.querySelectorAll(".card"));
+import { state } from '../state.js';
+
+export function getActiveIndex() {
+  if (!state.activeId) return -1;
+  return state.images.findIndex((img) => img.id === state.activeId);
 }
 
-export function getActiveIndex(state) {
-  const cards = getRenderedCards();
-  return cards.findIndex((card) => card.dataset.id == state.activeId);
+export function setActiveByIndex(index) {
+  if (index < 0 || index >= state.images.length) return;
+  state.activeId = state.images[index].id;
 }
